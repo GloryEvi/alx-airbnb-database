@@ -1,4 +1,4 @@
--- 1. Find the total number of bookings made by each user using COUNT and GROUP BY
+-- Total number of bookings made by each user using COUNT and GROUP BY
 SELECT 
     u.user_id,
     u.first_name,
@@ -10,7 +10,7 @@ LEFT JOIN Booking b ON u.user_id = b.user_id
 GROUP BY u.user_id, u.first_name, u.last_name, u.email
 ORDER BY total_bookings DESC;
 
--- 2. Rank properties based on total number of bookings using window functions
+-- Rank properties based on total number of bookings using window functions
 SELECT 
     p.property_id,
     p.name,

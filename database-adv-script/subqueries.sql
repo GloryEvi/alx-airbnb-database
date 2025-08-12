@@ -1,4 +1,4 @@
--- 1. Find all properties where the average rating is greater than 4.0 using a subquery
+-- properties where the average rating is greater than 4.0 using a subquery
 SELECT 
     p.property_id,
     p.name,
@@ -14,7 +14,7 @@ WHERE p.property_id IN (
     HAVING AVG(r.rating) > 4.0
 );
 
--- 2. Correlated subquery to find users who have made more than 3 bookings
+--Correlated subquery to find users who have made more than 3 bookings
 SELECT 
     u.user_id,
     u.first_name,

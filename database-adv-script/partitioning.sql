@@ -1,13 +1,13 @@
 -- Partitioning Implementation for Booking Table
--- This script implements table partitioning based on start_date to improve query performance
 
--- Step 1: Create backup of existing data
+
+-- Create backup of existing data
 CREATE TABLE Booking_backup AS SELECT * FROM Booking;
 
--- Step 2: Drop existing Booking table
+--  Drop existing Booking table
 DROP TABLE IF EXISTS Booking;
 
--- Step 3: Create partitioned Booking table
+-- Create partitioned Booking table
 -- Using RANGE partitioning based on start_date
 CREATE TABLE Booking (
     booking_id UUID PRIMARY KEY,
@@ -67,22 +67,22 @@ PARTITION BY RANGE (TO_DAYS(start_date)) (
 );
 */
 
--- Step 4: Restore data from backup
+--Restore data from backup
 INSERT INTO Booking SELECT * FROM Booking_backup;
 
--- Step 5: Create indexes on partitioned table
+--Create indexes on partitioned table
 CREATE INDEX idx_booking_user_id ON Booking(user_id);
 CREATE INDEX idx_booking_property_id ON Booking(property_id);
 CREATE INDEX idx_booking_status ON Booking(status);
 CREATE INDEX idx_booking_end_date ON Booking(end_date);
 CREATE INDEX idx_booking_created_at ON Booking(created_at);
 
--- Step 6: Create composite indexes for common query patterns
+--Create composite indexes for common query patterns
 CREATE INDEX idx_booking_property_dates ON Booking(property_id, start_date, end_date);
 CREATE INDEX idx_booking_user_dates ON Booking(user_id, start_date);
 CREATE INDEX idx_booking_status_dates ON Booking(status, start_date);
 
--- Step 7: Performance testing queries
+--Performance testing queries
 
 -- Query 1: Date range query (should benefit from partition pruning)
 EXPLAIN PARTITIONS

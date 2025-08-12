@@ -224,4 +224,3 @@ Table partitioning on the Booking table delivered significant performance improv
 - **Improved maintenance capabilities**
 - **Better scalability for future growth**
 
-The partitioning strategy successfully addresses the performance challenges of the large Booking table while providing a foundation for efficient data management and archival processes. Regular monitoring and maintenance will ensure continued optimal performance as the dataset grows.
