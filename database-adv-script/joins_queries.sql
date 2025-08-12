@@ -31,7 +31,8 @@ SELECT
     u.last_name AS reviewer_last_name
 FROM Property p
 LEFT JOIN Review r ON p.property_id = r.property_id
-LEFT JOIN User u ON r.user_id = u.user_id;
+LEFT JOIN User u ON r.user_id = u.user_id
+ORDER BY p.property_id, r.created_at;
 
 --  FULL OUTER JOIN: Retrieve all users and all bookings, even if the user has no booking or a booking is not linked to a user
 SELECT 

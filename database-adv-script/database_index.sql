@@ -1,6 +1,26 @@
 -- Database Indexing Strategy for AirBnB Database
 -- High-usage columns identified for indexing based on common query patterns
 
+-- PERFORMANCE MEASUREMENT: Test queries BEFORE adding indexes
+-- These EXPLAIN ANALYZE statements measure baseline performance
+
+-- Test query 1: Property search by location and price
+EXPLAIN ANALYZE
+SELECT * FROM Property 
+WHERE location = 'New York' AND price_per_night BETWEEN 100 AND 300;
+
+-- Test query 2: User bookings with date range
+EXPLAIN ANALYZE
+SELECT b.*, p.name FROM Booking b
+JOIN Property p ON b.property_id = p.property_id
+WHERE b.user_id = 1 AND b.start_date >= '2024-01-01';
+
+-- Test query 3: Property reviews with ratings
+EXPLAIN ANALYZE
+SELECT p.name, r.rating, r.comment FROM Property p
+LEFT JOIN Review r ON p.property_id = r.property_id
+WHERE p.location = 'California' AND r.rating >= 4;
+
 -- USER TABLE INDEXES
 -- Email is already unique (has implicit index), but adding explicit index for login queries
 CREATE INDEX idx_user_email ON User(email);
@@ -88,3 +108,32 @@ CREATE INDEX idx_message_sent_at ON Message(sent_at);
 
 -- Composite index for conversation queries
 CREATE INDEX idx_message_conversation ON Message(sender_id, recipient_id, sent_at);
+
+-- PERFORMANCE MEASUREMENT: Test the same queries AFTER adding indexes
+-- These EXPLAIN ANALYZE statements measure improved performance
+
+-- Test query 1: Property search by location and price (should use idx_property_location_price)
+EXPLAIN ANALYZE
+SELECT * FROM Property 
+WHERE location = 'New York' AND price_per_night BETWEEN 100 AND 300;
+
+-- Test query 2: User bookings with date range (should use idx_booking_user_id and idx_booking_start_date)
+EXPLAIN ANALYZE
+SELECT b.*, p.name FROM Booking b
+JOIN Property p ON b.property_id = p.property_id
+WHERE b.user_id = 1 AND b.start_date >= '2024-01-01';
+
+-- Test query 3: Property reviews with ratings (should use idx_property_location and idx_review_property_rating)
+EXPLAIN ANALYZE
+SELECT p.name, r.rating, r.comment FROM Property p
+LEFT JOIN Review r ON p.property_id = r.property_id
+WHERE p.location = 'California' AND r.rating >= 4;
+
+-- Additional performance test: Booking availability check
+EXPLAIN ANALYZE
+SELECT p.property_id, p.name FROM Property p
+WHERE p.property_id NOT IN (
+    SELECT DISTINCT b.property_id FROM Booking b
+    WHERE b.start_date <= '2024-12-31' AND b.end_date >= '2024-12-01'
+    AND b.status = 'confirmed'
+);
